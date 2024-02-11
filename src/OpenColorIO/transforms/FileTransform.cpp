@@ -25,6 +25,16 @@
 
 namespace OCIO_NAMESPACE
 {
+
+class fileExcep
+{
+ public:
+ fileExcep( std::string &message)  
+ {
+    std::runtime_error{message};
+ } 
+}
+
 FileTransformRcPtr FileTransform::Create()
 {
     return FileTransformRcPtr(new FileTransform(), &deleter);
@@ -91,12 +101,16 @@ void FileTransform::validate() const
     {
         std::string errMsg("FileTransform validation failed: ");
         errMsg += ex.what();
-        throw Exception(errMsg.c_str());
+        // throw Exception(errMsg.c_str());
+        throw fileExcep(errMsg);
+       
     }
+
 
     if (getImpl()->m_src.empty())
     {
-        throw Exception("FileTransform: empty file path");
+        //updated using fileExcep 
+        throw fileExcep("FileTransform: empty file path");
     }
 
     // NB: Not validating interpolation since v1 configs such as the spi examples use
@@ -361,14 +375,39 @@ FileFormat* FormatRegistry::getFileFormatByName(const std::string & name) const
     return nullptr;
 }
 
+
+bool FormatRegistry::IsFormatExtensionSupported(const std::String &extension) const
+{
+    std::string LowerCase = StringUtils::Lower(extension);
+
+    if(m_formatsByExtension.count(LowerCase)>0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void FormatRegistry::getFileFormatForExtension(const std::string & extension,
                                                FileFormatVector & possibleFormats) const
 {
-    FileFormatVectorMap::const_iterator iter
-        = m_formatsByExtension.find(StringUtils::Lower(extension));
+    // FileFormatVectorMap::const_iterator iter
+    //     = m_formatsByExtension.find(StringUtils::Lower(extension));
 
-    if(iter != m_formatsByExtension.end())
-        possibleFormats = iter->second;
+    // if(iter != m_formatsByExtension.end())
+    //     possibleFormats = iter->second;
+
+    std::string LowerCase = StringUtils::Lower(extension);
+
+    if(IsFormatExtensionSupported(LowerCase))    {
+        possibleFormats = m_formatsByExtension[LowerCase];
+    }
+    else
+    {
+        possibleFormat.clear();
+    }
 }
 
 void FormatRegistry::registerFileFormat(FileFormat* format)

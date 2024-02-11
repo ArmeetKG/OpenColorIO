@@ -127,7 +127,7 @@ class FormatRegistry
 {
 public:
     static FormatRegistry & GetInstance();
-
+    bool IsFormatExtensionSupported(const std::string &extension) const;
     FileFormat* getFileFormatByName(const std::string & name) const;
     void getFileFormatForExtension(const std::string & extension, FileFormatVector & possibleFormats) const;
 
