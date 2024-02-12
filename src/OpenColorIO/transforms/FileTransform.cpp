@@ -101,7 +101,7 @@ void FileTransform::validate() const
     {
         std::string errMsg("FileTransform validation failed: ");
         errMsg += ex.what();
-        // throw Exception(errMsg.c_str());
+     
         throw fileExcep(errMsg);
        
     }
@@ -406,7 +406,7 @@ void FormatRegistry::getFileFormatForExtension(const std::string & extension,
     }
     else
     {
-        possibleFormat.clear();
+        possibleFormats.clear();
     }
 }
 
